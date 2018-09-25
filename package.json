@@ -1,0 +1,15 @@
+{
+  "name": "starumllicensegenerator",
+  "version": "1.0.0",
+  "description": "Generate a license for StarUML",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sleeyax",
+  "license": "MIT",
+  "dependencies": {
+    "prompt": "^1.0.0"
+  },
+  "devDependencies": {}
+}
