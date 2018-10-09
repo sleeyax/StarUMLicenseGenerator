@@ -1,10 +1,7 @@
 var prompt = require('prompt');
 
-function printHeader() {
-    console.log('StarUML license generator\n');
-    console.log('Waiting for answers before starting license generation...\n');
-}
-printHeader();
+console.log('StarUML license generator\n');
+console.log('Waiting for answers before starting license generation...\n');
 
 var schema = {
     properties: {
@@ -19,7 +16,7 @@ var schema = {
             default: 'StarUML'
         },
         licenseType: {
-            message: 'Type',
+            message: 'License type [Personal, Commercial, Educational, Classroom]',
             required: false,
             default: 'Commercial'
         },
@@ -27,20 +24,31 @@ var schema = {
             message: 'Users',
             required: false,
             default: 1,
-            type: 'integer'
-        },
+        }
     }
 };
 
 prompt.start();
 prompt.get(schema, function (err, licenseInfo) {
     try {
+        switch (licenseInfo.licenseType.toLowerCase()) {
+            case 'commercial':
+                licenseInfo.licenseType = 'CO';
+                break;
+            case 'personal':
+                licenseInfo.licenseType = 'PS';
+                break;
+            case 'educational':
+                licenseInfo.licenseType = 'ED';
+            case 'classroom':
+                licenseInfo.licenseType = 'CR';
+                break;
+        }
         licenseInfo['timestamp'] = (new Date).getTime();
         const SK = 'DF9B72CC966FBE3A46F99858C5AEE';
         let base = SK + licenseInfo.name + SK + licenseInfo.product + '-' + licenseInfo.licenseType + SK + licenseInfo.quantity + SK + licenseInfo.timestamp + SK;
         let crypto = require('crypto');
-        let key = crypto.createHash('sha1').update(base).digest('hex').toUpperCase();
-        licenseInfo['licenseKey'] = key;
+        licenseInfo['licenseKey'] = crypto.createHash('sha1').update(base).digest('hex').toUpperCase();
         let fs = require('fs');
         fs.writeFile(process.env.APPDATA + "\\" + licenseInfo.product + "\\license.key", JSON.stringify(licenseInfo), function (err) {
             if (err) {
@@ -50,7 +58,7 @@ prompt.get(schema, function (err, licenseInfo) {
             console.log("Done! Make sure to block internet access to 'staruml.io' !");
         });
         
-    }catch(err) {
-        console.error(err.message);
+    }catch(error) {
+        console.error(error.message);
     }
 });
